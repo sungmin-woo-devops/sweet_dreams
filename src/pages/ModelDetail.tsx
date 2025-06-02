@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { ModelViewer } from '../components/3d/ModelViewer';
 import { Button } from '../components/ui/Button';
+import { ModelCard } from '../components/ui/Card';
 import { useParams, Link } from 'react-router-dom';
 import { mockModels } from '../data/mockModels';
 import { Heart, Download, Share2, Flag, Tag, Clock, YoutubeIcon as CubeIcon } from 'lucide-react';
