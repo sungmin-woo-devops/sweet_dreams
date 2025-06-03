@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X, User, Heart, Plus, CakeSlice } from 'lucide-react';
+import { Search, Menu, X, User, Heart, Plus, CakeSlice, Settings, LogOut, Bell, BookOpen, Crown } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   
   useEffect(() => {
@@ -13,13 +15,30 @@ export const Header: React.FC = () => {
       setIsScrolled(window.scrollY > 10);
     };
     
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
   
   const isActive = (path: string) => {
     return location.pathname === path;
   };
+
+  const notifications = [
+    { id: 1, text: "Your model 'Chocolate Cake' was featured!", isNew: true },
+    { id: 2, text: "New comment on your cupcake model", isNew: true },
+    { id: 3, text: "Welcome to Sweet3D Pro!", isNew: false }
+  ];
   
   return (
     <header className={cn(
@@ -94,17 +113,89 @@ export const Header: React.FC = () => {
           </nav>
           
           <div className="flex items-center space-x-3">
-            <button className="p-2 rounded-full hover:bg-cream-100">
+            {/* Notifications */}
+            <div className="relative">
+              <button className="p-2 rounded-full hover:bg-cream-100 relative">
+                <Bell className="h-5 w-5 text-chocolate-700" />
+                <span className="absolute top-0 right-0 h-2 w-2 bg-primary-500 rounded-full"></span>
+              </button>
+            </div>
+
+            {/* Favorites */}
+            <button className="p-2 rounded-full hover:bg-cream-100 relative">
               <Heart className="h-5 w-5 text-chocolate-700" />
+              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                3
+              </span>
             </button>
+
+            {/* Create Button */}
             <Link to="/generate" className="btn-primary flex items-center gap-1">
               <Plus className="h-4 w-4" /> Create
             </Link>
-            <Link to="/profile">
-              <div className="h-10 w-10 bg-chocolate-100 rounded-full flex items-center justify-center">
+
+            {/* User Menu */}
+            <div className="relative" ref={userMenuRef}>
+              <button 
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="h-10 w-10 bg-chocolate-100 rounded-full flex items-center justify-center hover:bg-chocolate-200 transition-colors relative"
+              >
                 <User className="h-5 w-5 text-chocolate-700" />
-              </div>
-            </Link>
+                <span className="absolute -top-1 -right-1 h-3 w-3 bg-accent-500 border-2 border-white rounded-full"></span>
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg py-2 border border-cream-200">
+                  <div className="px-4 py-3 border-b border-cream-200">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-primary-600" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-chocolate-800">Sarah Chen</p>
+                        <p className="text-xs text-chocolate-500">sarah@sweet3d.com</p>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="inline-flex items-center px-2 py-1 bg-accent-100 text-accent-800 text-xs rounded-full">
+                          <Crown className="h-3 w-3 mr-1" /> Pro
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="py-2">
+                    <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-chocolate-700 hover:bg-cream-50">
+                      <User className="h-4 w-4 mr-3" />
+                      Profile
+                    </Link>
+                    <Link to="/dashboard" className="flex items-center px-4 py-2 text-sm text-chocolate-700 hover:bg-cream-50">
+                      <BookOpen className="h-4 w-4 mr-3" />
+                      My Models
+                    </Link>
+                    <Link to="/settings" className="flex items-center px-4 py-2 text-sm text-chocolate-700 hover:bg-cream-50">
+                      <Settings className="h-4 w-4 mr-3" />
+                      Settings
+                    </Link>
+                    <button className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                      <LogOut className="h-4 w-4 mr-3" />
+                      Sign Out
+                    </button>
+                  </div>
+
+                  <div className="px-4 py-3 bg-cream-50 rounded-b-xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-medium text-chocolate-800">Pro Plan</p>
+                        <p className="text-xs text-chocolate-500">50/100 models used</p>
+                      </div>
+                      <div className="w-24 h-2 bg-cream-200 rounded-full overflow-hidden">
+                        <div className="w-1/2 h-full bg-accent-500"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
