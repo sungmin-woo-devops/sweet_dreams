@@ -53,4 +53,4 @@ src/
 - 향후 디지털 디저트 아카이브로 확장
 
 ## Hackathon
-이 프로젝트는 bolt.new Awards Hackathon
+이 프로젝트는 [bolt.new Awards Hackathon](https://bolt.new/awards) 참가작으로 제작되었습니다.
